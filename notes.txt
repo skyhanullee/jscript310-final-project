@@ -1,0 +1,9 @@
+1. Blackjack
+https://devpost.com/software/basic-blackjack
+
+https://deckofcardsapi.com/
+
+https://github.com/AL-S4H3R/basic-blackjack/blob/main/src/App.jsx
+
+
+2. Recipe Book
