@@ -30,8 +30,8 @@ const API_KEY = '1';
 
 const BASE_URL = 'www.themealdb.com/api/json/v1/'
 
-formElement.addEventListener('submit', (e) => {
-    e.preventDefault();
+// formElement.addEventListener('submit', (e) => {
+//     e.preventDefault();
 
     const recipeName = recipeElement.value;
 
@@ -42,16 +42,16 @@ formElement.addEventListener('submit', (e) => {
     // Fetch recipe for search and add top 5 results to page
     fetch(url)
         .then((data) => {
-            console.log(data.json());
-            // return data.json();
+            // console.log(data.json());
+            return data.json();
         })
 
         .then((responseJson) => {
-            // console.log(responseJson.json);
-            // const recipeResults = responseJson.results.books
-
+            // console.log(responseJson);
             console.log(url);
-            // console.log(recipeResults);
+
+            const recipeResults = responseJson.meals[0];
+            console.log(recipeResults);
 
             // if (responseJson.num_results > 0) {
             //     console.log(bookResults[0]);
@@ -70,5 +70,5 @@ formElement.addEventListener('submit', (e) => {
             //     console.log('Error status');
             // }
         })
-});
+// });
 
