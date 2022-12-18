@@ -4,22 +4,30 @@
 
 // 2. Your project must include [4 of the 6] following features (but may include more):
 // ---------------------------------------------------------------------------
-// [ ] One or more [Classes] (must use static methods and/or prototype methods)
+// [*] One or more [Classes] (must use static methods and/or prototype methods)
 
 
-// [ ] Write [testable code], use [Jasmine] unit tests
+// [*] Write [testable code], use [Jasmine] unit tests
 
 
-// [?] One or more [timing functions] -> fetch?
+// [ ] One or more [timing functions]
 
 
 // [x] One or more [fetch requests] to a 3rd party [API] -> themealdb
 
 
-// [ ] Sets, updates, or changes [local storage]
+// [*] Sets, updates, or changes [local storage]
 
 
 // [x] Contains [form fields], [validates] those fields -> search form
+
+$(document).ready(function() {
+  $.getScript("recipe.js", () => {
+    console.log("load complete");
+  });
+});
+
+
 
 
 const formElement = document.getElementById('recipe-form');
@@ -55,7 +63,7 @@ formElement.addEventListener('submit', (e) => {
 
 
             if(recipeResults.idMeal != null) {
-                createResultItem(recipeResults);
+                createResultrecipe(recipeResults);
                 console.log(recipeResults.strMeal);
             }
 
@@ -78,14 +86,14 @@ formElement.addEventListener('submit', (e) => {
         })
 });
 
-function createResultItem(recipeResult) {
+function createResultrecipe(recipeResult) {
     // ```
-    // <section id="search-item">
-    //     <img id="image" src="https://bootdey.com/img/Content/avatar/avatar1.png"></img>
-    //     <div class="search-item-body">
+    // <section id="recipe">
+    //     <img id="recipe-image" src="https://bootdey.com/img/Content/avatar/avatar1.png"></img>
+    //     <div class="recipe-body">
     //         <div class="row">
     //             <div class="col-sm-9">
-    //                 <h4 class="search-item-title">Title</h4>
+    //                 <h4 class="recipe-title">Title</h4>
     //                 <p class="info">Recipe info</p>
     //                 <p class="description">Recipe description</p>
     //             </div>
@@ -97,33 +105,40 @@ function createResultItem(recipeResult) {
     //     </div>
     // </section>
     // ```
+
+    // Set recipe variables
+    const recipeImage = recipeResult.strMealThumb;
+    const recipeTitle = recipeResult.strMeal;
+    const recipeArea = recipeResult.strArea;
+    const recipeCategory = recipeResult.strCategory;
+    const recipeInstructions = recipeResult.strInstructions;
     
-    // create item components
-    const item = document.createElement('section');
-    const image = document.createElement('img');
-    const itemBody = document.createElement('div');
+    // create recipe HTML elements
+    const searchRecipe = document.createElement('section');
+    const searchRecipeImage = document.createElement('img');
+    const searchRecipeBody = document.createElement('div');
     const row = document.createElement('div');
     const col = document.createElement('div');
-    const itemTitle = document.createElement('h4');
-    const itemInfo = document.createElement('p');
-    const itemInstructions = document.createElement('p');
+    const searchRecipeTitle = document.createElement('h4');
+    const searchRecipeInfo = document.createElement('p');
+    const searchRecipeInstructions = document.createElement('p');
 
-    // assign id to components
-    item.setAttribute('id', 'search-item');
-    image.setAttribute('id', 'search-image');
-    itemBody.setAttribute('id', 'search-item-body');
-    itemTitle.setAttribute('id', 'search-item-title');
-    itemInfo.setAttribute('id', 'search-item-info');
-    itemInstructions.setAttribute('id', 'search-item-instructions');
+    // assign id to HTML elements
+    searchRecipe.setAttribute('id', 'recipe-result');
+    searchRecipeImage.setAttribute('id', 'recipe-image');
+    searchRecipeBody.setAttribute('id', 'recipe-body');
+    searchRecipeTitle.setAttribute('id', 'recipe-title');
+    searchRecipeInfo.setAttribute('id', 'recipe-info');
+    searchRecipeInstructions.setAttribute('id', 'recipe-instructions');
 
     // set content from API
-    image.setAttribute('src', recipeResult.strMealThumb);
-    itemTitle.textContent = recipeResult.strMeal;
-    itemInfo.textContent = `${recipeResult.strArea}, ${recipeResult.strCategory}`;
-    itemInstructions.textContent = recipeResult.strInstructions;
+    searchRecipeImage.setAttribute('src', recipeImage);
+    searchRecipeTitle.textContent = recipeTitle;
+    searchRecipeInfo.textContent = `${recipeArea}, ${recipeCategory}`;
+    searchRecipeInstructions.textContent = recipeInstructions;
 
     // bootstrap styling
-    item.setAttribute('class', 'card');
+    recipe.setAttribute('class', 'card');
     row.setAttribute('class', 'row');
     col.setAttribute('class', 'col-sm-9');
 
@@ -176,13 +191,17 @@ function createResultItem(recipeResult) {
     `;
     
 
-    item.append(image, itemBody);
-    itemBody.append(row);
+    searchRecipe.append(searchRecipeImage, searchRecipeBody);
+    searchRecipeBody.append(row);
     row.append(col);
-    // col.append(itemTitle, itemInfo, itemInstructions);
-    col.append(itemTitle, itemInfo);
+    // col.append(recipeTitle, recipeInfo, recipeInstructions);
+    col.append(searchRecipeTitle, searchRecipeInfo);
     col.innerHTML += modalExample;
 
-    document.getElementById('main-container').append(item);
+    document.getElementById('main-container').append(recipe);
+
+    // const newRecipe = new Recipe(recipeImage, recipeTitle, recipeArea, recipeCategory, recipeInstructions);
+    // console.log(newRecipe);
+    // newRecipe.logToConsole();
 }
 
