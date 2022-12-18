@@ -2,7 +2,17 @@
     flex-direction: row;
 }
 
-.card img {
-    width: 30%;
-    height: 30%;
+@media screen and (max-width: 991px) {
+    .card {
+        flex-direction: column;
+        width: 80%;
+    }
+
+    #recipe-body h4 {
+        font-size: xx-large;
+    }
+
+    #recipe-body p {
+        font-size: x-large;
+    }
 }
