@@ -22,90 +22,57 @@
 // [x] Contains [form fields], [validates] those fields -> search form
 
 $(document).ready(function() {
+  const API_KEY = `1`;
+  const BASE_URL = `https://www.themealdb.com/api/json/v1/`;
+  const NUM_RESULTS = 5;
+  let recipeName = '';
+  
   $.getScript("recipe.js", () => {
     console.log("load complete");
   });
-});
 
 
-
-
-const formElement = document.getElementById('recipe-form');
-const recipeElement = document.getElementById('recipe');
-
-
-const API_KEY = '1';
-
-const BASE_URL = 'www.themealdb.com/api/json/v1/'
-
-formElement.addEventListener('submit', (e) => {
+  $('#recipe-form').submit((e) => {
     e.preventDefault();
+    console.log("jquery submit worked");
 
-    const recipeName = recipeElement.value;
+    recipeName = $('#recipe').val();
+    const url = `${BASE_URL}${API_KEY}/search.php?s=${recipeName}`;
+    // const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=curry`;
 
-    // const url = `${BASE_URL}${API_KEY}/search.php?s=${recipeName}`;
-    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=sushi`;
-    
 
+    fetchRecipe(url);
+    // createResultrecipe(recipeResult);
+  });
+
+  function fetchRecipe(url) {
+    console.log(`recipe name is ${recipeName}`);
     // Fetch recipe for search and add top 5 results to page
     fetch(url)
-        .then((data) => {
-            // console.log(data.json());
-            return data.json();
-        })
+    .then((data) => {
+        // console.log(data.json());
+        return data.json();
+    })
 
-        .then((responseJson) => {
-            // console.log(responseJson);
-            console.log(url);
+    .then((responseJson) => {
+        // console.log(responseJson);
+        console.log(url);
 
-            const recipeResults = responseJson.meals[0];
-            console.log(recipeResults);
-
-
-            if(recipeResults.idMeal != null) {
-                createResultrecipe(recipeResults);
-                console.log(recipeResults.strMeal);
+        // const recipeResults = responseJson.meals[0];
+        // console.log(recipeResults);
+            for (let i = 0; i < NUM_RESULTS; i++) {
+              const recipeResults = responseJson.meals[i];
+              createResultrecipe(recipeResults);
+              console.log(recipeResults);
             }
+    })
+    .catch((error) => {
+      console.log(error)
+    });
+  }
+  
 
-            // if (responseJson.num_results > 0) {
-            //     console.log(bookResults[0]);
-            //     for (let i = 0; i < 5; i++) {
-            //         // createBookResult(bookResults[i]);
-            //     }
-            // }
-            // else {
-            //     console.log('Number of results is 0');
-            //     const resultElement = document.createElement('h3');
-            //     resultElement.textContent = 'No results, try a different date';
-            //     document.getElementById('recipes-container').appendChild(errorElement);
-            // }
-
-            // if (responseJson.status == 'ERROR') {
-            //     console.log('Error status');
-            // }
-        })
-});
-
-function createResultrecipe(recipeResult) {
-    // ```
-    // <section id="recipe">
-    //     <img id="recipe-image" src="https://bootdey.com/img/Content/avatar/avatar1.png"></img>
-    //     <div class="recipe-body">
-    //         <div class="row">
-    //             <div class="col-sm-9">
-    //                 <h4 class="recipe-title">Title</h4>
-    //                 <p class="info">Recipe info</p>
-    //                 <p class="description">Recipe description</p>
-    //             </div>
-    //             <!-- <div class="col-sm-3 text-align-center">
-    //                 <p class="value3 mt-sm">$9, 700</p>
-    //                 <p class="fs-mini text-muted">PER WEEK</p><a class="btn btn-primary btn-info btn-sm" href="#">Learn More</a>
-    //             </div> -->
-    //         </div>
-    //     </div>
-    // </section>
-    // ```
-
+  function createResultrecipe(recipeResult) {
     // Set recipe variables
     const recipeImage = recipeResult.strMealThumb;
     const recipeTitle = recipeResult.strMeal;
@@ -114,33 +81,38 @@ function createResultrecipe(recipeResult) {
     const recipeInstructions = recipeResult.strInstructions;
     
     // create recipe HTML elements
-    const searchRecipe = document.createElement('section');
-    const searchRecipeImage = document.createElement('img');
-    const searchRecipeBody = document.createElement('div');
-    const row = document.createElement('div');
-    const col = document.createElement('div');
-    const searchRecipeTitle = document.createElement('h4');
-    const searchRecipeInfo = document.createElement('p');
-    const searchRecipeInstructions = document.createElement('p');
+    const newRecipe = document.createElement('section');
+    const newRecipeImage = document.createElement('img');
+    const newRecipeBody = document.createElement('div');
+    const newRow = document.createElement('div');
+    const newCol = document.createElement('div');
+    const newRecipeTitle = document.createElement('h4');
+    const newRecipeArea = document.createElement('p');
+    const newRecipeCategory = document.createElement('p');
+    const newRecipeInstructions = document.createElement('p');
 
     // assign id to HTML elements
-    searchRecipe.setAttribute('id', 'recipe-result');
-    searchRecipeImage.setAttribute('id', 'recipe-image');
-    searchRecipeBody.setAttribute('id', 'recipe-body');
-    searchRecipeTitle.setAttribute('id', 'recipe-title');
-    searchRecipeInfo.setAttribute('id', 'recipe-info');
-    searchRecipeInstructions.setAttribute('id', 'recipe-instructions');
+    newRecipe.setAttribute('id', 'recipe-result');
+    newRecipeImage.setAttribute('id', 'recipe-image');
+    newRecipeBody.setAttribute('id', 'recipe-body');
+    newRecipeTitle.setAttribute('id', 'recipe-title');
+    newRecipeArea.setAttribute('id', 'recipe-area');
+    newRecipeCategory.setAttribute('id', 'recipe-category');
+    newRecipeInstructions.setAttribute('id', 'recipe-instructions');
 
     // set content from API
-    searchRecipeImage.setAttribute('src', recipeImage);
-    searchRecipeTitle.textContent = recipeTitle;
-    searchRecipeInfo.textContent = `${recipeArea}, ${recipeCategory}`;
-    searchRecipeInstructions.textContent = recipeInstructions;
+    newRecipeImage.setAttribute('src', recipeImage);
+    newRecipeTitle.textContent = recipeTitle;
+    newRecipeArea.textContent = recipeArea;
+    newRecipeCategory.textContent = recipeCategory;
+    newRecipeInstructions.textContent = recipeInstructions;
 
     // bootstrap styling
-    recipe.setAttribute('class', 'card');
-    row.setAttribute('class', 'row');
-    col.setAttribute('class', 'col-sm-9');
+    newRecipe.setAttribute('class', 'card mx-auto');
+    newRecipeImage.setAttribute('class', 'col-lg-3');
+    newRow.setAttribute('class', 'row');
+    newCol.setAttribute('class', 'col-sm-12 my-auto');
+    newRecipeBody.setAttribute('class', 'w-100 d-inlineblock text-center');
 
     // create modal
     const modal = document.createElement('div');
@@ -160,48 +132,27 @@ function createResultrecipe(recipeResult) {
     modalBody.setAttribute('class', 'modal-body');
     modalFooter.setAttribute('class', 'modal-footer');
 
-    const modalExample = `
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-      Launch demo modal
-    </button>
-    
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    // get main container where elements will be appended
+    document.getElementById('recipe-container').append(newRecipe);
+
+    // append recipe elements
+    newRecipe.append(newRecipeImage, newRecipeBody);
+    newRecipeBody.append(newRow);
+    newRow.append(newCol);
+    // newCol.append(newRecipeTitle, newRecipeArea, newRecipeCategory, recipeInstructions);
+    newCol.append(newRecipeTitle, newRecipeArea, newRecipeCategory);
+
+    // TODO: append modal
 
 
-    `;
-    
-
-    searchRecipe.append(searchRecipeImage, searchRecipeBody);
-    searchRecipeBody.append(row);
-    row.append(col);
-    // col.append(recipeTitle, recipeInfo, recipeInstructions);
-    col.append(searchRecipeTitle, searchRecipeInfo);
-    col.innerHTML += modalExample;
-
-    document.getElementById('main-container').append(recipe);
 
     // const newRecipe = new Recipe(recipeImage, recipeTitle, recipeArea, recipeCategory, recipeInstructions);
     // console.log(newRecipe);
     // newRecipe.logToConsole();
-}
+  }
+
+});
+
+
+
 
