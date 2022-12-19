@@ -1,6 +1,18 @@
+body {
+    background: #110f16;
+    color: #ffffff
+}
+
 .card {
     flex-direction: row;
+    background-color: #242232;
+    color: #ffffff;
 }
+
+#header-container {
+    background: #242232;
+}
+
 
 @media screen and (max-width: 991px) {
     .card {
