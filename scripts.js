@@ -4,143 +4,162 @@
 
 // 2. Your project must include [4 of the 6] following features (but may include more):
 // ---------------------------------------------------------------------------
-// [*] One or more [Classes] (must use static methods and/or prototype methods)
+// [ ] One or more [Classes] (must use static methods and/or prototype methods)
 
 
-// [*] Write [testable code], use [Jasmine] unit tests
+// [ ] Write [testable code], use [Jasmine] unit tests
 
 
-// [ ] One or more [timing functions]
+// [X] One or more [timing functions]
 
 
 // [x] One or more [fetch requests] to a 3rd party [API] -> themealdb
 
 
-// [*] Sets, updates, or changes [local storage]
+// [X] Sets, updates, or changes [local storage]
 
 
 // [x] Contains [form fields], [validates] those fields -> search form
 
 $(document).ready(function() {
+  const API_KEY = '1';
+  const BASE_URL = 'https://www.themealdb.com/api/json/v1/';
+  const RANDOM_MEAL_URL = `https://www.themealdb.com/api/json/v1/1/random.php`;
+  let searchRecipeName = '';
+  let searchNumberOfResults = 0;
+  let searchHistory = { recipe: [] };
+  let url  = '';
+  
   $.getScript("recipe.js", () => {
-    console.log("load complete");
+    console.log("recipe.js load success");
   });
-});
+
+  
+  // display random meals on top of page
+  const randomMealContainer = $('#random-meal-container');
+  createRandomMeal(randomMealContainer);
+
+  // loop through random meals every 10 seconds
+  randomMealLoop($('#random-meal-container'), 10000);
 
 
 
-
-const formElement = document.getElementById('recipe-form');
-const recipeElement = document.getElementById('recipe');
-
-
-const API_KEY = '1';
-
-const BASE_URL = 'www.themealdb.com/api/json/v1/'
-
-formElement.addEventListener('submit', (e) => {
+  $('#recipe-form').submit((e) => {
     e.preventDefault();
 
-    const recipeName = recipeElement.value;
+    // get the input search from user
+    searchRecipeName = $('#recipe').val();
+    searchNumberOfResults = $('#number-of-recipes').val();
+    url = `${BASE_URL}${API_KEY}/search.php?s=${searchRecipeName}`;
+    // const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=curry`;
 
-    // const url = `${BASE_URL}${API_KEY}/search.php?s=${recipeName}`;
-    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=sushi`;
-    
+    // // show "First 5 Results For:" and the search input
+    $('#results-container').empty();
+    $('#results-container').append(`<h2>First ${searchNumberOfResults} Results For: ${searchRecipeName}</h2>`);
 
+    // fetch recipe data from the API
+    const resultsElement = document.getElementById('results-container');
+    fetchRecipe(url, searchNumberOfResults, resultsElement); 
+
+    // save to search local storage
+    saveSearchToLocalStorage(searchRecipeName);
+
+    // reset form after submit
+    $('#recipe-form')[0].reset();
+    $('#search-modal-container').empty();
+  });
+
+  function fetchRecipe(url, numOfResults, searchRecipeLocation) {
+    console.log(`recipe name is ${searchRecipeName}`);
     // Fetch recipe for search and add top 5 results to page
     fetch(url)
-        .then((data) => {
-            // console.log(data.json());
-            return data.json();
-        })
+    .then((data) => {
+        return data.json();
+    })
 
-        .then((responseJson) => {
-            // console.log(responseJson);
-            console.log(url);
+    .then((responseJson) => {
+        console.log(url);
+          for (let i = 0; i < numOfResults; i++) {
+            const recipeResult = responseJson.meals[i];
+            createResultrecipe(recipeResult, searchRecipeLocation);
+            createModal(recipeResult);
+            console.log(recipeResult);
+          }
+    })
 
-            const recipeResults = responseJson.meals[0];
-            console.log(recipeResults);
+    .catch((error) => {
+      console.log(error)
+      if(error == `TypeError: Cannot read properties of null (reading '0')`) {
+        createErrorMessage(`There are 0 results that contain "${searchRecipeName}"`);
+      }
+    });
+  }
 
-
-            if(recipeResults.idMeal != null) {
-                createResultrecipe(recipeResults);
-                console.log(recipeResults.strMeal);
-            }
-
-            // if (responseJson.num_results > 0) {
-            //     console.log(bookResults[0]);
-            //     for (let i = 0; i < 5; i++) {
-            //         // createBookResult(bookResults[i]);
-            //     }
-            // }
-            // else {
-            //     console.log('Number of results is 0');
-            //     const resultElement = document.createElement('h3');
-            //     resultElement.textContent = 'No results, try a different date';
-            //     document.getElementById('recipes-container').appendChild(errorElement);
-            // }
-
-            // if (responseJson.status == 'ERROR') {
-            //     console.log('Error status');
-            // }
-        })
-});
-
-function createResultrecipe(recipeResult) {
-    // ```
-    // <section id="recipe">
-    //     <img id="recipe-image" src="https://bootdey.com/img/Content/avatar/avatar1.png"></img>
-    //     <div class="recipe-body">
-    //         <div class="row">
-    //             <div class="col-sm-9">
-    //                 <h4 class="recipe-title">Title</h4>
-    //                 <p class="info">Recipe info</p>
-    //                 <p class="description">Recipe description</p>
-    //             </div>
-    //             <!-- <div class="col-sm-3 text-align-center">
-    //                 <p class="value3 mt-sm">$9, 700</p>
-    //                 <p class="fs-mini text-muted">PER WEEK</p><a class="btn btn-primary btn-info btn-sm" href="#">Learn More</a>
-    //             </div> -->
-    //         </div>
-    //     </div>
-    // </section>
-    // ```
-
-    // Set recipe variables
+  function createResultrecipe(recipeResult, appendLocation) {
+    // set recipe variables
     const recipeImage = recipeResult.strMealThumb;
     const recipeTitle = recipeResult.strMeal;
     const recipeArea = recipeResult.strArea;
     const recipeCategory = recipeResult.strCategory;
-    const recipeInstructions = recipeResult.strInstructions;
+    const recipeId = recipeResult.idMeal;
     
     // create recipe HTML elements
-    const searchRecipe = document.createElement('section');
-    const searchRecipeImage = document.createElement('img');
-    const searchRecipeBody = document.createElement('div');
-    const row = document.createElement('div');
-    const col = document.createElement('div');
-    const searchRecipeTitle = document.createElement('h4');
-    const searchRecipeInfo = document.createElement('p');
-    const searchRecipeInstructions = document.createElement('p');
+    const newRecipe = document.createElement('section');
+    const newRecipeImage = document.createElement('img');
+    const newRecipeBody = document.createElement('div');
+    const newRow = document.createElement('div');
+    const newCol = document.createElement('div');
+    const newRecipeTitle = document.createElement('h3');
+    const newRecipeArea = document.createElement('div');
+    const newRecipeCategory = document.createElement('div');
+    const lineBreak = document.createElement('hr');
 
-    // assign id to HTML elements
-    searchRecipe.setAttribute('id', 'recipe-result');
-    searchRecipeImage.setAttribute('id', 'recipe-image');
-    searchRecipeBody.setAttribute('id', 'recipe-body');
-    searchRecipeTitle.setAttribute('id', 'recipe-title');
-    searchRecipeInfo.setAttribute('id', 'recipe-info');
-    searchRecipeInstructions.setAttribute('id', 'recipe-instructions');
+    // set id to HTML elements
+    newRecipe.setAttribute('id', `recipe-result-${recipeId}`);
+    newRecipeImage.setAttribute('id', `recipe-image-${recipeId}`);
+    newRecipeBody.setAttribute('id', `recipe-body-${recipeId}`);
+    newRecipeTitle.setAttribute('id', `recipe-title-${recipeId}`);
+    newRecipeArea.setAttribute('id', `recipe-area-${recipeId}`);
+    newRecipeCategory.setAttribute('id', `recipe-category-${recipeId}`);
 
     // set content from API
-    searchRecipeImage.setAttribute('src', recipeImage);
-    searchRecipeTitle.textContent = recipeTitle;
-    searchRecipeInfo.textContent = `${recipeArea}, ${recipeCategory}`;
-    searchRecipeInstructions.textContent = recipeInstructions;
+    newRecipeImage.setAttribute('src', recipeImage);
+    newRecipeTitle.textContent = recipeTitle;
+    newRecipeArea.textContent = recipeArea;
+    newRecipeCategory.textContent = recipeCategory;
 
-    // bootstrap styling
-    recipe.setAttribute('class', 'card');
-    row.setAttribute('class', 'row');
-    col.setAttribute('class', 'col-sm-9');
+    // bootstrap styling for recipe results
+    newRecipe.setAttribute('class', 'card mx-auto mb-4 rounded shadow');
+    newRecipeImage.setAttribute('class', 'col-lg-3 p-0');
+    newRecipeTitle.setAttribute('class', 'my-3');
+    newRow.setAttribute('class', 'row');
+    newCol.setAttribute('class', 'col-md-12 py-3');
+    newRecipeBody.setAttribute('class', 'col-md-9 w-100 m-2 d-inlineblock text-center');
+    lineBreak.setAttribute('class', 'divider my-2');
+    newRecipeArea.setAttribute('class', 'badge badge-light p-2 col-sm-2 text-center');
+    newRecipeCategory.setAttribute('class', 'badge badge-light p-2 col-sm-2 text-center');
+
+    // get main container where elements will be appended
+    appendLocation.append(newRecipe);
+
+    // append recipe elements
+    newRecipe.append(newRecipeImage, newRecipeBody);
+    newRecipeBody.append(newRow);
+    newRow.append(newCol);
+
+    newCol.append(newRecipeTitle, lineBreak);
+    newCol.append(newRecipeArea, newRecipeCategory, document.createElement('br'));
+  }
+
+  function createModal(recipeResult) {
+
+    // get and set title and instructions for modal
+    const recipeTitle = recipeResult.strMeal;
+    const recipeInstructions = recipeResult.strInstructions;
+    const recipeId = recipeResult.idMeal;
+    const newRecipeInstructions = document.createElement('p');
+    newRecipeInstructions.setAttribute('id', 'recipe-instructions');
+    newRecipeInstructions.textContent = recipeInstructions;
 
     // create modal
     const modal = document.createElement('div');
@@ -151,57 +170,100 @@ function createResultrecipe(recipeResult) {
     const modalBody = document.createElement('h4');
     const modalFooter = document.createElement('h4');
 
-    // assign modal components
-    modal.setAttribute('class', 'modal');
+    // set modal attributes
+    modal.setAttribute('id', `recipe-modal-${recipeId}`);
+    modal.setAttribute('tabindex', '-1');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-labelledby', 'recipe-modal-center-title');
+    modal.setAttribute('aria-hidden', 'true');
     modalDialog.setAttribute('class', 'modal-dialog');
+    modalDialog.setAttribute('role', 'document');
+    modalTitle.setAttribute('id', 'recipe-modal-long-title');
+
+    // bootstrap styling for modal
+    modal.setAttribute('class', 'modal fade ');
+    modalDialog.setAttribute('class', 'modal-dialog modal-dialog-centered');
     modalContent.setAttribute('class', 'modal-content');
     modalHeader.setAttribute('class', 'modal-header');
     modalTitle.setAttribute('class', 'modal-title');
     modalBody.setAttribute('class', 'modal-body');
     modalFooter.setAttribute('class', 'modal-footer');
 
-    const modalExample = `
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-      Launch demo modal
-    </button>
-    
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            ...
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    // set modal content from API
+    modalTitle.textContent = recipeTitle;
+    modalBody.textContent = recipeInstructions;
 
+    // create modal button
+    const modalButton = document.createElement('button');
 
-    `;
-    
+    // set modal button attributes
+    modalButton.setAttribute('id', 'modal-button');
+    modalButton.setAttribute('class', 'btn btn-info my-1');
+    modalButton.setAttribute('data-toggle', 'modal');
+    modalButton.setAttribute('data-target', `#recipe-modal-${recipeId}`);
+    modalButton.textContent = 'More Details';
 
-    searchRecipe.append(searchRecipeImage, searchRecipeBody);
-    searchRecipeBody.append(row);
-    row.append(col);
-    // col.append(recipeTitle, recipeInfo, recipeInstructions);
-    col.append(searchRecipeTitle, searchRecipeInfo);
-    col.innerHTML += modalExample;
+    // append modal button to recipe-body
+    const recipeBody = document.getElementById(`recipe-body-${recipeId}`).firstChild;
+    recipeBody.firstChild.append(modalButton);
 
-    document.getElementById('main-container').append(recipe);
+    // add modal html into modal-container in the body
+    document.getElementById('modal-container').append(modal);
+    modal.append(modalDialog);
+    modalDialog.append(modalContent);
+    modalContent.append(modalHeader, modalBody, modalFooter);
+    modalHeader.append(modalTitle);
+  }
 
-    // const newRecipe = new Recipe(recipeImage, recipeTitle, recipeArea, recipeCategory, recipeInstructions);
-    // console.log(newRecipe);
-    // newRecipe.logToConsole();
-}
+  function createErrorMessage(message) {
+    // create error element
+    const messageElement = document.createElement('h3');
 
+    // set id name
+    messageElement.setAttribute('id', 'error-message');
+
+    // bootstrap styling
+    messageElement.setAttribute('class', 'text-center');
+
+    // set message text to element
+    messageElement.textContent = message;
+
+    // append in results-container
+    document.getElementById('results-container').append(messageElement);
+  }
+
+  function saveSearchToLocalStorage(searchData) {
+    // get history from local storage
+    if(localStorage.getItem('history')) {
+      searchHistory = JSON.parse(localStorage.getItem('history'));
+    }
+
+    // if search is not blank, add search to history array
+    if(searchData != "") {
+      searchHistory.recipe.push(searchData);
+      localStorage.setItem('history', JSON.stringify(searchHistory));
+    }
+    else {
+      console.log('input is empty');
+    }
+
+    console.log(searchHistory);
+
+    // TODO: Limit number of search history items to avoid overfilling local storage
+  }
+
+  function createRandomMeal(appendLocation) {
+    const randomMealId = fetchRecipe(RANDOM_MEAL_URL, 1, appendLocation);
+  }
+
+  function randomMealLoop(appendLocation, intervalTime) {
+    setInterval(function() {
+      // empty the random-meal-container
+      $('#random-meal-container').empty();
+      $('#random-meal-container').text('Random Meal: ');
+
+      // fetch and append a new random meal
+      createRandomMeal(appendLocation);
+    }, intervalTime);
+    }
+});

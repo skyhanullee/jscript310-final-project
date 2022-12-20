@@ -1,8 +1,75 @@
-.card {
-    flex-direction: row;
+body {
+    /* background: #110f16; */
+    background: #272333;
+    color: #ffffff
 }
 
-.card img {
-    width: 30%;
-    height: 30%;
+hr {
+    background-color: #ffffff;
+}
+
+.card {
+    flex-direction: row;
+    /* background-color: #242232; */
+    background-color: #363449;
+    color: #ffffff;
+}
+
+#header-container {
+    /* background: #242232; */
+    background: #363449;
+}
+
+.badge {
+    margin: 1.5rem 2rem;
+    padding: 1rem;
+}
+
+.modal-content {
+    background-color: #3f3655;
+}
+
+.modal-dialog {
+    max-width: 80% !important;
+    min-width: 50% !important;
+}
+
+@media (max-width: 991px) {
+    .card {
+        flex-direction: column;
+        /* width: 80%; */
+    }
+
+    [id*="recipe-body"] {
+        max-width: 100% !important;
+        /* background-color: red !important; */
+    }
+
+    [id*="recipe-body"] div {
+        max-width: 100%;
+        flex-direction: column;
+        margin: 0 !important;
+    }
+
+    [id*="recipe-body"] h4 {
+        font-size: xx-large;
+    }
+
+    [id*="recipe-body"] p {
+        font-size: x-large;
+    }
+
+    .badge {
+        margin: auto;
+        width: 45%;
+    }
+
+    .modal-dialog {
+        margin: auto !important;
+    }
+
+    #modal-button {
+        /* margin-left: 0.5rem 0rem; */
+        width: 100% !important;
+    }
 }
