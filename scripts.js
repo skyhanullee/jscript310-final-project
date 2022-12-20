@@ -24,9 +24,11 @@
 $(document).ready(function() {
   const API_KEY = '1';
   const BASE_URL = 'https://www.themealdb.com/api/json/v1/';
-  const NUM_RESULTS = 5;
-  let recipeName = '';
+  const RANDOM_MEAL_URL = `www.themealdb.com/api/json/v1/1/random.php`;
+  let searchRecipeName = '';
+  let searchNumberOfResults = 0;
   let searchHistory = { recipe: [] };
+  let url  = '';
   
   // 
   $.getScript("recipe.js", () => {
@@ -39,20 +41,22 @@ $(document).ready(function() {
     console.log("jquery submit worked");
 
     // get the input search from user
-    recipeName = $('#recipe').val();
-    const url = `${BASE_URL}${API_KEY}/search.php?s=${recipeName}`;
+    searchRecipeName = $('#recipe').val();
+    searchNumberOfResults = $('#number-of-recipes').val();
+    url = `${BASE_URL}${API_KEY}/search.php?s=${searchRecipeName}`;
     // const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=curry`;
 
-    // show "First 5 Results For:" and the search input
-    $('#recipe-container').empty();
-    $('#recipe-container').append(`<h2>First 5 Results For: ${recipeName}</h2>`);
+    // // show "First 5 Results For:" and the search input
+    $('#results-container').empty();
+    $('#results-container').append(`<h2>First ${searchNumberOfResults} Results For: ${searchRecipeName}</h2>`);
+    // emptyResults();
 
     // fetch recipe data from the API
-    fetchRecipe(url); 
+    // fetchRecipe(url, searchNumberOfResults); 
 
 
     // save to search local storage
-    saveSearchToLocalStorage(recipeName);
+    // saveSearchToLocalStorage(searchRecipeName);
 
     // reset form after submit
     $('#recipe-form')[0].reset();
@@ -60,8 +64,8 @@ $(document).ready(function() {
 
   });
 
-  function fetchRecipe(url) {
-    console.log(`recipe name is ${recipeName}`);
+  function fetchRecipe(url, numOfResults) {
+    console.log(`recipe name is ${searchRecipeName}`);
     // Fetch recipe for search and add top 5 results to page
     fetch(url)
     .then((data) => {
@@ -75,14 +79,18 @@ $(document).ready(function() {
 
         // const recipeResults = responseJson.meals[0];
         // console.log(recipeResults);
-            for (let i = 0; i < NUM_RESULTS; i++) {
+            for (let i = 0; i < numOfResults; i++) {
               const recipeResults = responseJson.meals[i];
               createResultrecipe(recipeResults);
               console.log(recipeResults);
             }
     })
+
     .catch((error) => {
       console.log(error)
+      if(error == `TypeError: Cannot read properties of null (reading '0')`) {
+        createErrorMessage(`There are 0 results that contain "${searchRecipeName}"`);
+      }
     });
   }
 
@@ -104,6 +112,7 @@ $(document).ready(function() {
     const newRecipeArea = document.createElement('p');
     const newRecipeCategory = document.createElement('p');
     const newRecipeInstructions = document.createElement('p');
+    const lineBreak = document.createElement('hr');
 
     // set id to HTML elements
     newRecipe.setAttribute('id', 'recipe-result');
@@ -126,18 +135,19 @@ $(document).ready(function() {
     newRecipeImage.setAttribute('class', 'col-lg-3 p-0');
     newRecipeTitle.setAttribute('class', 'my-3');
     newRow.setAttribute('class', 'row');
-    newCol.setAttribute('class', 'col-sm-8 my-auto');
-    newRecipeBody.setAttribute('class', 'col-sm-8 w-100 d-inlineblock text-center');
+    newCol.setAttribute('class', 'col-sm-8 mx-4');
+    newRecipeBody.setAttribute('class', 'col-sm-9 w-100 d-inlineblock text-center p-0');
+    lineBreak.setAttribute('class', 'divider my-2');
 
     // get main container where elements will be appended
-    document.getElementById('recipe-container').append(newRecipe);
+    document.getElementById('results-container').append(newRecipe);
 
     // append recipe elements
     newRecipe.append(newRecipeImage, newRecipeBody);
     newRecipeBody.append(newRow);
     newRow.append(newCol);
     // newCol.append(newRecipeTitle, newRecipeArea, newRecipeCategory, recipeInstructions);
-    newCol.append(newRecipeTitle, newRecipeArea, newRecipeCategory);
+    newCol.append(newRecipeTitle, lineBreak, newRecipeArea, newRecipeCategory);
 
     // create modal for recipe
     createModal(recipeTitle, recipeInstructions, newRow);
@@ -184,7 +194,7 @@ $(document).ready(function() {
     const modalButton = document.createElement('button');
 
     // set modal button attributes
-    modalButton.setAttribute('class', 'btn btn-info h-50 mx-auto my-auto');
+    modalButton.setAttribute('class', 'btn btn-info h-50 mx-3 my-4');
     modalButton.setAttribute('data-toggle', 'modal');
     modalButton.setAttribute('data-target', `#recipe-modal-${title}`);
     modalButton.textContent = 'More Details';
@@ -198,6 +208,23 @@ $(document).ready(function() {
     modalDialog.append(modalContent);
     modalContent.append(modalHeader, modalBody, modalFooter);
     modalHeader.append(modalTitle);
+  }
+
+  function createErrorMessage(message) {
+    // create error element
+    const messageElement = document.createElement('h3');
+
+    // set id name
+    messageElement.setAttribute('id', 'error-message');
+
+    // bootstrap styling
+    messageElement.setAttribute('class', 'text-center');
+
+    // set message text to element
+    messageElement.textContent = message;
+
+    // append in results-container
+    document.getElementById('results-container').append(messageElement);
   }
 
   function saveSearchToLocalStorage(searchData) {
@@ -219,6 +246,16 @@ $(document).ready(function() {
 
     // TODO: Limit number of search history items to avoid overfilling local storage
 
+  }
+
+  function emptyResults() {
+    // show "First 5 Results For:" and the search input
+    $('#results-container').empty();
+    $('#results-container').append(`<h2>First ${searchNumberOfResults} Results For: ${searchRecipeName}</h2>`);
+  }
+
+  function randomMeal() {
+    fetchRecipe(RANDOM_MEAL_URL, 1);
   }
 
 });
