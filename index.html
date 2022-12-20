@@ -16,54 +16,56 @@
 
   <body class="my-4">
     <div class="container">
-      <div class="row py-3 my-3 rounded" id="header-container">
+      <div class="row py-3 my-3 rounded shadow" id="header-container">
         <div class="col-12">
           <h1>Recipe Search from TheMealDB</h1>
         </div>
       </div>
-      <div class="row" id="search-container">
-        <div class="col-md-6">
-          <form id="recipe-form">
-            <div class="form-group mb-4">
-              <label for="recipe">Recipe:</label>
-              <input
-                id="recipe"
-                name="recipe"
-                class="form-control"
-                type="text"
-                pattern="^[A-Za-z]+$"
-                placeholder="What meal are you looking for?"
-                oninvalid="this.setCustomValidity(`Something isn't right. Please try entering your meal again!`)"
-                oninput="this.setCustomValidity(``)"
-                required
-              />
-            </div>
-            <div class="form-group mb-4">
-              <label for="number-of-recipes">Number of Recipes (default is 5):</label>
-              <input
-                id="number-of-recipes"
-                name="number-of-recipes"
-                class="form-control"
-                type="number"
-                pattern="\d*"
-                min="0"
-                value="5"
-                oninvalid="this.setCustomValidity(`Something isn't right. Please try a different number!`)"
-                oninput="this.setCustomValidity(``)"
-                required
-              />
-            </div>
-            <div class="form-group mb-2">
-              <input
-                id="submit"
-                class="btn btn-primary"
-                type="submit"
-                value="Get Recipes"
-              />
-            </div>
-          </form>
+      <div class="row">
+        <div class="row" id="search-container">
+          <div class="col-md-4" id="form-container">
+            <form id="recipe-form">
+              <div class="form-group mb-4">
+                <label for="recipe">Recipe:</label>
+                <input
+                  id="recipe"
+                  name="recipe"
+                  class="form-control"
+                  type="text"
+                  pattern="^[A-Za-z]+$"
+                  placeholder="What meal are you looking for?"
+                  oninvalid="this.setCustomValidity(`Something isn't right. Please try entering your meal again!`)"
+                  oninput="this.setCustomValidity(``)"
+                  required
+                />
+              </div>
+              <div class="form-group mb-4">
+                <label for="number-of-recipes">Number of Recipes (default is 5):</label>
+                <input
+                  id="number-of-recipes"
+                  name="number-of-recipes"
+                  class="form-control"
+                  type="number"
+                  pattern="\d*"
+                  min="0"
+                  value="5"
+                  oninvalid="this.setCustomValidity(`Something isn't right. Please try a different number!`)"
+                  oninput="this.setCustomValidity(``)"
+                  required
+                />
+              </div>
+              <div class="form-group mb-2">
+                <input
+                  id="submit"
+                  class="btn btn-primary"
+                  type="submit"
+                  value="Get Recipes"
+                />
+              </div>
+            </form>
+          </div>
+          <div class="col-md-8" id="random-meal-container">Random Meal: </div>
         </div>
-
         <div class="col-md-12" id="results-container">
           <!-- <h2 id="search-result-header"></h2> -->
         </div>
