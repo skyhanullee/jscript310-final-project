@@ -14,3 +14,19 @@ Sets, updates, or changes local storage
 Contains form fields, validates those fields
 3. Have fun with it!
 
+[ ] One or more [Classes] (must use static methods and/or prototype methods)
+
+
+[ ] Write [testable code], use [Jasmine] unit tests
+
+
+[X] One or more [timing functions]
+
+
+[x] One or more [fetch requests] to a 3rd party [API] -> themealdb
+
+
+[X] Sets, updates, or changes [local storage]
+
+
+[x] Contains [form fields], [validates] those fields -> search form
