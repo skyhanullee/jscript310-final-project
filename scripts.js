@@ -1,25 +1,21 @@
 // ---------------------------------------------------------------------------
 // 1. Your project must be [interactive] (i.e. must have event listeners).  
 // The user must be able to interact with the document with the mouse or keyboard and have the [document change / update].
-
 // 2. Your project must include [4 of the 6] following features (but may include more):
 // ---------------------------------------------------------------------------
-// [ ] One or more [Classes] (must use static methods and/or prototype methods)
 
+// [ ] One or more [Classes] (must use static methods and/or prototype methods)
 
 // [ ] Write [testable code], use [Jasmine] unit tests
 
-
 // [X] One or more [timing functions]
-
 
 // [x] One or more [fetch requests] to a 3rd party [API] -> themealdb
 
-
 // [X] Sets, updates, or changes [local storage]
 
-
 // [x] Contains [form fields], [validates] those fields -> search form
+
 
 $(document).ready(function() {
   const API_KEY = '1';
@@ -30,19 +26,17 @@ $(document).ready(function() {
   let searchHistory = { recipe: [] };
   let url  = '';
   
-  $.getScript("recipe.js", () => {
-    console.log("recipe.js load success");
-  });
+  // // import recipe class from recipe.js
+  // $.getScript("recipe.js", () => {
+  //   console.log("recipe.js load success");
+  // });
 
-  
   // display random meals on top of page
   const randomMealContainer = $('#random-meal-container');
   createRandomMeal(randomMealContainer);
 
   // loop through random meals every 10 seconds
   randomMealLoop($('#random-meal-container'), 10000);
-
-
 
   $('#recipe-form').submit((e) => {
     e.preventDefault();
@@ -51,9 +45,8 @@ $(document).ready(function() {
     searchRecipeName = $('#recipe').val();
     searchNumberOfResults = $('#number-of-recipes').val();
     url = `${BASE_URL}${API_KEY}/search.php?s=${searchRecipeName}`;
-    // const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=curry`;
 
-    // // show "First 5 Results For:" and the search input
+    // empty current results and write number of results for search input
     $('#results-container').empty();
     $('#results-container').append(`<h2>First ${searchNumberOfResults} Results For: ${searchRecipeName}</h2>`);
 
@@ -69,6 +62,12 @@ $(document).ready(function() {
     $('#search-modal-container').empty();
   });
 
+  /**
+   * 
+   * @param {string} url - The URL to fetch the recipe data
+   * @param {number} numOfResults - Number of results to show on the page, specified by the user
+   * @param {string} searchRecipeLocation - Element to append the recipe results
+   */
   function fetchRecipe(url, numOfResults, searchRecipeLocation) {
     console.log(`recipe name is ${searchRecipeName}`);
     // Fetch recipe for search and add top 5 results to page
@@ -95,6 +94,11 @@ $(document).ready(function() {
     });
   }
 
+  /**
+   * 
+   * @param {Object} recipeResult - Recipe data from the API
+   * @param {string} appendLocation - Element to append the recipe results
+   */
   function createResultrecipe(recipeResult, appendLocation) {
     // set recipe variables
     const recipeImage = recipeResult.strMealThumb;
@@ -139,18 +143,21 @@ $(document).ready(function() {
     newRecipeArea.setAttribute('class', 'badge badge-light p-2 col-sm-2 text-center');
     newRecipeCategory.setAttribute('class', 'badge badge-light p-2 col-sm-2 text-center');
 
-    // get main container where elements will be appended
+    // append to element specified when called
     appendLocation.append(newRecipe);
 
     // append recipe elements
     newRecipe.append(newRecipeImage, newRecipeBody);
     newRecipeBody.append(newRow);
     newRow.append(newCol);
-
     newCol.append(newRecipeTitle, lineBreak);
     newCol.append(newRecipeArea, newRecipeCategory, document.createElement('br'));
   }
 
+  /**
+   * 
+   * @param {Object} recipeResult - Recipe data form the API
+   */
   function createModal(recipeResult) {
 
     // get and set title and instructions for modal
@@ -215,6 +222,10 @@ $(document).ready(function() {
     modalHeader.append(modalTitle);
   }
 
+  /**
+   * 
+   * @param {string} message - A message to show on the page when function is called
+   */
   function createErrorMessage(message) {
     // create error element
     const messageElement = document.createElement('h3');
@@ -232,6 +243,10 @@ $(document).ready(function() {
     document.getElementById('results-container').append(messageElement);
   }
 
+  /**
+   * 
+   * @param {string} searchData - The search term user has input when searching on the form
+   */
   function saveSearchToLocalStorage(searchData) {
     // get history from local storage
     if(localStorage.getItem('history')) {
@@ -252,10 +267,19 @@ $(document).ready(function() {
     // TODO: Limit number of search history items to avoid overfilling local storage
   }
 
+  /**
+   * 
+   * @param {string} appendLocation - Element to append the recipe
+   */
   function createRandomMeal(appendLocation) {
     const randomMealId = fetchRecipe(RANDOM_MEAL_URL, 1, appendLocation);
   }
 
+  /**
+   * 
+   * @param {string} appendLocation - Element to append the recipe
+   * @param {number} intervalTime - (In milliseconds) How often to call for new random meal
+   */
   function randomMealLoop(appendLocation, intervalTime) {
     setInterval(function() {
       // empty the random-meal-container
