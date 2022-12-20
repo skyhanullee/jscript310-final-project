@@ -13,11 +13,25 @@ body {
     background: #242232;
 }
 
+hr {
+    background-color: #ffffff;
+}
 
-@media screen and (max-width: 991px) {
+@media (max-width: 991px) {
     .card {
         flex-direction: column;
-        width: 80%;
+        /* width: 80%; */
+    }
+
+    #recipe-body {
+        max-width: 100%;
+
+    }
+
+    #recipe-body div {
+        max-width: 100%;
+        flex-direction: column;
+        margin: 0 !important;
     }
 
     #recipe-body h4 {
