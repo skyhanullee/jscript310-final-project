@@ -44,3 +44,6 @@ My project include these 4 of the 6 required features:
 
 #### Or the page will notify if there are no results for the search.
 ![image](https://user-images.githubusercontent.com/48109897/208791439-b82a65e4-9628-434f-a63a-38f10ec6d7b7.png)
+
+#### When "More Details" is clicked, a modal with the recipe instructions will pop up.
+![image](https://user-images.githubusercontent.com/48109897/208793199-dba6e827-6298-48de-86d2-b3f9ceaf9ea4.png)
