@@ -24,6 +24,7 @@ My project include these 4 of the 6 required features:
 ![image](https://user-images.githubusercontent.com/48109897/208791353-5dc72f7f-73a8-44ac-b148-1c5fd42b89ac.png)
 
 #### There is a random meal that changes every 10 seconds using setInterval().
+#### The loop will stop once the user searches using the form.
 ![image](https://user-images.githubusercontent.com/48109897/208791564-960b3967-bd78-4735-a092-b32bb7675ae4.png)
 ![image](https://user-images.githubusercontent.com/48109897/208791640-86cc2900-647c-41ec-9b6e-1450ba88568c.png)
 
