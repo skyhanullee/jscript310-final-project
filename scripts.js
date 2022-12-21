@@ -37,7 +37,7 @@ $(document).ready(function() {
   createRandomMeal(randomMealContainer);
 
   // loop through random meals every 10 seconds
-  randomMealLoop($('#random-meal-container'), 2000);
+  randomMealLoop($('#random-meal-container'), 10000);
 
   $('#recipe-form').submit((e) => {
     e.preventDefault();
