@@ -8,11 +8,11 @@
 
 // [ ] Write [testable code], use [Jasmine] unit tests
 
-// [X] One or more [timing functions]
+// [x] One or more [timing functions]
 
 // [x] One or more [fetch requests] to a 3rd party [API] -> themealdb
 
-// [X] Sets, updates, or changes [local storage]
+// [x] Sets, updates, or changes [local storage]
 
 // [x] Contains [form fields], [validates] those fields -> search form
 
@@ -25,6 +25,7 @@ $(document).ready(function() {
   let searchNumberOfResults = 0;
   let searchHistory = { recipe: [] };
   let url  = '';
+  let isPaused = false;
   
   // // import recipe class from recipe.js
   // $.getScript("recipe.js", () => {
@@ -36,7 +37,7 @@ $(document).ready(function() {
   createRandomMeal(randomMealContainer);
 
   // loop through random meals every 10 seconds
-  randomMealLoop($('#random-meal-container'), 10000);
+  randomMealLoop($('#random-meal-container'), 2000);
 
   $('#recipe-form').submit((e) => {
     e.preventDefault();
@@ -57,6 +58,9 @@ $(document).ready(function() {
     // save to search local storage
     saveSearchToLocalStorage(searchRecipeName);
 
+    // random meal will stop looping
+    isPaused = true;
+
     // reset form after submit
     $('#recipe-form')[0].reset();
     $('#search-modal-container').empty();
@@ -69,7 +73,6 @@ $(document).ready(function() {
    * @param {string} searchRecipeLocation - Element to append the recipe results
    */
   function fetchRecipe(url, numOfResults, searchRecipeLocation) {
-    console.log(`recipe name is ${searchRecipeName}`);
     // Fetch recipe for search and add top 5 results to page
     fetch(url)
     .then((data) => {
@@ -282,12 +285,15 @@ $(document).ready(function() {
    */
   function randomMealLoop(appendLocation, intervalTime) {
     setInterval(function() {
-      // empty the random-meal-container
-      $('#random-meal-container').empty();
-      $('#random-meal-container').text('Random Meal: ');
+      if(!isPaused) {
+        // empty the random-meal-container
+        $('#random-meal-container').empty();
+        $('#random-meal-container').text('Random Meal: ');
 
-      // fetch and append a new random meal
-      createRandomMeal(appendLocation);
+        // fetch and append a new random meal
+        createRandomMeal(appendLocation);
+      }
+
     }, intervalTime);
     }
 });
